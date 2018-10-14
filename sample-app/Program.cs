@@ -29,14 +29,14 @@ namespace sample_app {
             }
 
             // Setup Expo
-            Expo.SendBatchSize = 2; // Could be anywhere from 1 to 100, using 2 for testing purposes
+            Expo.SendBatchSize = 2; // Default is 100, not recommended to change, only doing so here for testing purposes
             Expo.SendCallback += Expo_SendCallback;
             Expo.SendErrorCallback += Expo_SendErrorCallback;
-            Expo.GetReceiptBatchSize = 2; // Could be anywhere from 1 to 300, using 2 for testing purposes
+            Expo.GetReceiptBatchSize = 2; // Default is 300, not recommended to change, only doing so here for testing purposes
             Expo.GetReceiptCallback += Expo_GetReceiptCallback;
             Expo.GetReceiptErrorCallback += Expo_GetReceiptErrorCallback;
 
-            // Read the tokens from the input file and loop through them
+            // Read the tokens from the input file and loop through them, sending each a message
             try {
                 string[] PushTokens = File.ReadAllLines(PushTokenFilename);
                 foreach (string PushToken in PushTokens) {
@@ -57,6 +57,7 @@ namespace sample_app {
             Console.WriteLine("Send completed, wait a bit and hit a key to check the receipts");
             Console.ReadKey();
 
+            // Loop through the tickets, checking the receipt for each one
             try {
                 foreach (var Ticket in _Tickets) {
                     if (string.IsNullOrWhiteSpace((string)Ticket.id)) {
@@ -72,6 +73,14 @@ namespace sample_app {
                 // Always call FlushGetReceiptAsync at the end to ensure any queued requests are delivered
                 await Expo.FlushGetReceiptAsync();
             }
+
+            // Pause until user is ready to check receipts
+            Console.WriteLine();
+            Console.WriteLine("Check completed, hit a key to try again with the single function call");
+            Console.ReadKey();
+
+            // Alternatively, you can check a bunch of tickets at once -- no need to flush at the end
+            await Expo.GetReceiptsAsync(_Tickets);
 
             // Pause at end
             Console.WriteLine();
