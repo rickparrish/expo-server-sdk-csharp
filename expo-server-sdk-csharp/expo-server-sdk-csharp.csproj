@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,8 +43,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Events\GetReceiptErrorEventArgs.cs" />
+    <Compile Include="Events\SendErrorEventArgs.cs" />
+    <Compile Include="Expo.cs" />
+    <Compile Include="Models\Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Events\GetReceiptEventArgs.cs" />
+    <Compile Include="Models\Receipt.cs" />
+    <Compile Include="Events\SendEventArgs.cs" />
+    <Compile Include="ResponseModels\GetReceiptsResponse.cs" />
+    <Compile Include="ResponseModels\SendResponse.cs" />
+    <Compile Include="Models\Ticket.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

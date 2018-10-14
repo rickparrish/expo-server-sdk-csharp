@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace expo_server_sdk_csharp
-{
-    public class Class1
-    {
+namespace expo_server_sdk_csharp {
+    public class GetReceiptEventArgs {
+        public List<Receipt> Receipts { get; set; }
     }
 }
