@@ -17,7 +17,7 @@ namespace sample_app {
             MainAsync(args).GetAwaiter().GetResult();
         }
 
-        static async Task MainAsync(string[] args) { 
+        static async Task MainAsync(string[] args) {
             // Ensure we have the input file
             if (!File.Exists(PushTokenFilename)) {
                 Console.WriteLine("Please create a push-tokens.txt containing the tokens you'd like to test with.");
@@ -29,10 +29,12 @@ namespace sample_app {
             }
 
             // Setup Expo
-            Expo.SendBatchSize = 2; // Default is 100, not recommended to change, only doing so here for testing purposes
+            var Expo = new Expo() {
+                SendBatchSize = 2, // Default is 100, not recommended to change, only doing so here for testing purposes
+                GetReceiptBatchSize = 2, // Default is 300, not recommended to change, only doing so here for testing purposes
+            };
             Expo.SendCallback += Expo_SendCallback;
             Expo.SendErrorCallback += Expo_SendErrorCallback;
-            Expo.GetReceiptBatchSize = 2; // Default is 300, not recommended to change, only doing so here for testing purposes
             Expo.GetReceiptCallback += Expo_GetReceiptCallback;
             Expo.GetReceiptErrorCallback += Expo_GetReceiptErrorCallback;
 
@@ -49,7 +51,7 @@ namespace sample_app {
                 }
             } finally {
                 // Always call FlushSendAsync at the end to ensure any queued messages are delivered
-                await Expo.FlushSendAsync(); 
+                await Expo.FlushSendAsync();
             }
 
             // Pause until user is ready to check receipts

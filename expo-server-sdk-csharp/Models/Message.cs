@@ -67,7 +67,7 @@ namespace expo_server_sdk_csharp {
         /// level 5 and high priority to 10.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
-        public Priority? priority { get; set; }
+        public Priority? priority { get; set; } = Priority.high;
 
         /// <summary>
         /// A sound to play when the recipient receives this notification. Specify
