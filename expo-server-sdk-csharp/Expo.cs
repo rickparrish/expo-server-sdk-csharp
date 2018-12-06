@@ -72,12 +72,31 @@ namespace expo_server_sdk_csharp {
                 // Send the request and parse the response
                 var RequestResult = _Client.PostAsync(GetReceiptsUrl, Content).Result;
                 string ResponseText = await RequestResult.Content.ReadAsStringAsync();
-                var ResponseObject = JsonConvert.DeserializeObject<GetReceiptsResponse>(ResponseText);
 
-                // Generate our list of receipts
-                var Receipts = new List<Receipt>();
+                // Catch deserialize errors so we can report invalid responsetext
+                GetReceiptsResponse ResponseObject = null;
+                try {
+                    ResponseObject = JsonConvert.DeserializeObject<GetReceiptsResponse>(ResponseText);
+                } catch (Exception ex) {
+                    // Fire off the get receipt error callback with the errors
+                    GetReceiptErrorCallback?.Invoke(null, new GetReceiptErrorEventArgs() {
+                        Errors = new List<GetReceiptResponseError>() {
+                            new GetReceiptResponseError() {
+                                code = "-1",
+                                message = ex.Message
+                            }
+                        },
+                        ResponseBody = ResponseText,
+                        StatusCode = RequestResult.StatusCode,
+                        Tickets = _TicketQueue,
+                    });
+
+                    return;
+                }
+
                 if (RequestResult.IsSuccessStatusCode) {
                     // Request succeeded, so we should have individual receipts
+                    var Receipts = new List<Receipt>();
                     foreach (var KVP in ResponseObject.data) {
                         Receipts.Add(new Receipt() {
                             errorDetails = KVP.Value.details?.error,
@@ -133,12 +152,32 @@ namespace expo_server_sdk_csharp {
                 // Send the request and parse the response
                 var RequestResult = _Client.PostAsync(SendUrl, Content).Result;
                 string ResponseText = await RequestResult.Content.ReadAsStringAsync();
-                var ResponseObject = JsonConvert.DeserializeObject<SendResponse>(ResponseText);
+
+                // Catch deserialize errors so we can report invalid responsetext
+                SendResponse ResponseObject = null;
+                try {
+                    ResponseObject = JsonConvert.DeserializeObject<SendResponse>(ResponseText);
+                } catch (Exception ex) {
+                    // Fire off the send error callback with the errors
+                    SendErrorCallback?.Invoke(null, new SendErrorEventArgs() {
+                        Errors = new List<SendResponseError>() {
+                            new SendResponseError() {
+                                code = "-1",
+                                message = ex.Message
+                            }
+                        },
+                        ResponseBody = ResponseText,
+                        StatusCode = RequestResult.StatusCode,
+                        Messages = _MessageQueue,
+                    });
+
+                    return;
+                }
 
                 // Generate our list of tickets
-                var Tickets = new List<Ticket>();
                 if (RequestResult.IsSuccessStatusCode) {
                     // Request succeeded, so we should have individual tickets
+                    var Tickets = new List<Ticket>();
                     for (int i = 0; i < ResponseObject.data.Count; i++) {
                         Tickets.Add(new Ticket() {
                             errorDetails = ResponseObject.data[i].details?.error,
@@ -161,7 +200,6 @@ namespace expo_server_sdk_csharp {
                         StatusCode = RequestResult.StatusCode,
                         Messages = _MessageQueue,
                     });
-
                 }
             } finally {
                 // Clear the queue for the next batch
