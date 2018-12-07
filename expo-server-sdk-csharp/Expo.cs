@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,11 +37,14 @@ namespace expo_server_sdk_csharp {
         private const string GetReceiptsUrl = "https://exp.host/--/api/v2/push/getReceipts";
         private const string SendUrl = "https://exp.host/--/api/v2/push/send";
 
-        private HttpClient _Client = new HttpClient();
+        private HttpClient _Client = null;
         private List<Message> _MessageQueue = new List<Message>();
         private List<Ticket> _TicketQueue = new List<Ticket>();
 
         public Expo() {
+            _Client = new HttpClient(new HttpClientHandler() {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            });
             _Client.DefaultRequestHeaders.Add("accept", "application/json");
             _Client.DefaultRequestHeaders.Add("accept-encoding", "gzip, deflate");
         }
